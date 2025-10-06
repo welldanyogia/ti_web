@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Inventory Mini – Barang</title>
+    <style>
+        body{font-family:system-ui, sans-serif; margin:2rem}
+        table{border-collapse: collapse; width:100%}
+        th,td{border:1px solid #ddd; padding:.5rem}
+        form{display:flex; gap:.5rem; flex-wrap:wrap; margin:.75rem 0}
+        input,button{padding:.5rem}
+        .row{display:flex; gap:.5rem}
+    </style>
+</head>
+<body>
+<h1>Data Barang</h1>
+<form id="fAdd">
+    <input name="sku" placeholder="SKU" required>
+    <input name="nama" placeholder="Nama" required>
+    <input name="satuan" placeholder="Satuan" required>
+    <button>Tambah</button>
+</form>
+
+
+<table>
+    <thead><tr><th>ID</th><th>SKU</th><th>Nama</th><th>Satuan</th><th>Aksi</th></tr></thead>
+    <tbody id="rows"></tbody>
+</table>
+
+
+<script>
+    const API = '../api/barang.php';
+    const rows = document.getElementById('rows');
+
+
+    async function list() {
+        const r = await fetch(API);
+        const data = await r.json();
+        rows.innerHTML = data.map(d => `
+<tr>
+<td>${d.id_barang}</td>
+<td><input value="${escapeHtml(d.sku)}" data-id="${d.id_barang}" data-k="sku"></td>
+<td><input value="${escapeHtml(d.nama)}" data-id="${d.id_barang}" data-k="nama"></td>
+<td><input value="${escapeHtml(d.satuan)}" data-id="${d.id_barang}" data-k="satuan"></td>
+<td>
+<button onclick="save(${d.id_barang})">Simpan</button>
+<button onclick="del(${d.id_barang})">Hapus</button>
+</td>
+</tr>`).join('');
+    }
+
+
+    function escapeHtml(s){
+        return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
+    }
+
+
+    fAdd.addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        const fd = new FormData(fAdd);
+        await fetch(API, { method:'POST', body: fd });
+        fAdd.reset();
+        list();
+    });
+
+
+    async function save(id){
+        const inputs = [...document.querySelectorAll(`input[data-id="${id}"]`)];
+        const payload = Object.fromEntries(inputs.map(i=>[i.dataset.k, i.value]));
+        await fetch(API + '?id=' + id, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+    </html>
