@@ -1,16 +1,40 @@
 <!doctype html>
 <html lang="id">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Inventory Mini – Barang</title>
     <style>
-        body{font-family:system-ui, sans-serif; margin:2rem}
-        table{border-collapse: collapse; width:100%}
-        th,td{border:1px solid #ddd; padding:.5rem}
-        form{display:flex; gap:.5rem; flex-wrap:wrap; margin:.75rem 0}
-        input,button{padding:.5rem}
-        .row{display:flex; gap:.5rem}
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 2rem
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: .5rem
+        }
+
+        form {
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap;
+            margin: .75rem 0
+        }
+
+        input, button {
+            padding: .5rem
+        }
+
+        .row {
+            display: flex;
+            gap: .5rem
+        }
     </style>
 </head>
 <body>
@@ -24,7 +48,15 @@
 
 
 <table>
-    <thead><tr><th>ID</th><th>SKU</th><th>Nama</th><th>Satuan</th><th>Aksi</th></tr></thead>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>SKU</th>
+        <th>Nama</th>
+        <th>Satuan</th>
+        <th>Aksi</th>
+    </tr>
+    </thead>
     <tbody id="rows"></tbody>
 </table>
 
@@ -51,22 +83,29 @@
     }
 
 
-    function escapeHtml(s){
-        return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
+    function escapeHtml(s) {
+        return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
     }
 
 
-    fAdd.addEventListener('submit', async (e)=>{
+    fAdd.addEventListener('submit', async (e) => {
         e.preventDefault();
         const fd = new FormData(fAdd);
-        await fetch(API, { method:'POST', body: fd });
+        await fetch(API, {method: 'POST', body: fd});
         fAdd.reset();
         list();
     });
 
 
-    async function save(id){
+    async function save(id) {
         const inputs = [...document.querySelectorAll(`input[data-id="${id}"]`)];
-        const payload = Object.fromEntries(inputs.map(i=>[i.dataset.k, i.value]));
-        await fetch(API + '?id=' + id, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
-    </html>
+        const payload = Object.fromEntries(inputs.map(i => [i.dataset.k, i.value]));
+        await fetch(API + '?id=' + id, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+    }
+</script>
+</body>
+</html>
