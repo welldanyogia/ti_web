@@ -5,107 +5,466 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Inventory Mini – Barang</title>
     <style>
+        :root {
+            color-scheme: light dark;
+            --bg: linear-gradient(135deg, #eef2ff 0%, #faf5ff 50%, #e0f2fe 100%);
+            --surface: rgba(255, 255, 255, 0.85);
+            --surface-dark: rgba(15, 23, 42, 0.65);
+            --border: rgba(148, 163, 184, 0.4);
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --accent: #8b5cf6;
+            --text: #0f172a;
+            --muted: #64748b;
+            --success: #10b981;
+            --warning: #f97316;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: radial-gradient(circle at top, #0f172a 0%, #020617 100%);
+                --surface: rgba(15, 23, 42, 0.85);
+                --surface-dark: rgba(2, 6, 23, 0.75);
+                --border: rgba(51, 65, 85, 0.65);
+                --text: #e2e8f0;
+                --muted: #94a3b8;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: system-ui, sans-serif;
-            margin: 2rem
+            margin: 0;
+            font-family: "Poppins", "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(1.5rem, 2vw, 4rem);
+            transition: background 600ms ease;
         }
 
-        table {
-            border-collapse: collapse;
-            width: 100%
+        main {
+            width: min(960px, 100%);
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            box-shadow: 0 25px 50px -12px rgba(30, 64, 175, 0.25);
+            border-radius: 24px;
+            padding: clamp(1.5rem, 4vw, 3rem);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            animation: floatIn 700ms ease both;
         }
 
-        th, td {
-            border: 1px solid #ddd;
-            padding: .5rem
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        h1 {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            letter-spacing: -0.02em;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            color: var(--primary);
+            text-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+        }
+
+        h1 span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 18px 30px -14px rgba(139, 92, 246, 0.65);
+        }
+
+        p {
+            color: var(--muted);
+            margin: 0;
+            max-width: 460px;
         }
 
         form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            background: var(--surface-dark);
+            padding: 1.25rem;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        input {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: .75rem 1rem;
+            font: inherit;
+            background: rgba(255, 255, 255, 0.85);
+            color: inherit;
+            transition: border 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: rgba(37, 99, 235, .65);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, .15);
+            transform: translateY(-2px);
+        }
+
+        input::placeholder {
+            color: var(--muted);
+        }
+
+        button {
+            appearance: none;
+            border: none;
+            border-radius: 999px;
+            padding: .75rem 1.5rem;
+            font: 600 clamp(.9rem, 1.8vw, 1rem)/1 "Poppins", system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: #f8fafc;
+            cursor: pointer;
+            box-shadow: 0 12px 24px -12px rgba(37, 99, 235, .6);
+            transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+        }
+
+        button:hover,
+        button:focus-visible {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 30px -10px rgba(37, 99, 235, .55);
+            filter: brightness(1.05);
+            outline: none;
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 10px 18px -10px rgba(37, 99, 235, .6);
+        }
+
+        button.secondary {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--border);
+            box-shadow: none;
+            transition: color 150ms ease, border 150ms ease, transform 150ms ease;
+        }
+
+        button.secondary:hover,
+        button.secondary:focus-visible {
+            color: var(--primary);
+            border-color: rgba(37, 99, 235, .65);
+            transform: translateY(-1px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.65);
+        }
+
+        thead {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.85), rgba(139, 92, 246, 0.85));
+            color: #f1f5f9;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            vertical-align: middle;
+        }
+
+        tbody tr {
+            backdrop-filter: blur(6px);
+        }
+
+        tbody tr:nth-child(odd) {
+            background: rgba(148, 163, 184, 0.08);
+        }
+
+        tbody tr:hover {
+            background: rgba(37, 99, 235, 0.08);
+        }
+
+        tbody input {
+            background: rgba(255, 255, 255, 0.65);
+            border-radius: 10px;
+            transition: background 200ms ease;
+        }
+
+        tbody input:focus {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        td:last-child {
             display: flex;
             gap: .5rem;
             flex-wrap: wrap;
-            margin: .75rem 0
         }
 
-        input, button {
-            padding: .5rem
+        .fade-in {
+            animation: slideUp 480ms ease forwards;
+            animation-delay: var(--delay, 0ms);
+            opacity: 0;
+            transform: translateY(12px);
         }
 
-        .row {
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px) scale(.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes floatIn {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .toast {
+            position: fixed;
+            inset: auto 50% 2rem 50%;
+            transform: translate(-50%, 150%);
+            background: var(--surface);
+            border-radius: 999px;
+            padding: .85rem 1.75rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 40px -18px rgba(15, 23, 42, 0.55);
+            color: var(--text);
+            font-weight: 600;
             display: flex;
-            gap: .5rem
+            align-items: center;
+            gap: .5rem;
+            transition: transform 350ms cubic-bezier(.22, 1.61, .36, 1);
+            z-index: 20;
+        }
+
+        .toast::before {
+            content: '';
+            font-size: 1.1rem;
+        }
+
+        .toast.show {
+            transform: translate(-50%, 0);
+        }
+
+        .toast[data-type="success"] {
+            border-color: rgba(16, 185, 129, 0.45);
+            color: var(--success);
+        }
+
+        .toast[data-type="success"]::before {
+            content: '✓';
+        }
+
+        .toast[data-type="warning"] {
+            border-color: rgba(249, 115, 22, 0.45);
+            color: var(--warning);
+        }
+
+        .toast[data-type="warning"]::before {
+            content: '⚠';
+        }
+
+        .toast[data-type="info"]::before {
+            content: 'ℹ';
+        }
+
+        .empty-row td {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: var(--muted);
+            font-weight: 600;
+            letter-spacing: .01em;
+        }
+
+        @media (max-width: 680px) {
+            td:last-child {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            thead {
+                font-size: .9rem;
+            }
         }
     </style>
 </head>
 <body>
-<h1>Data Barang</h1>
-<form id="fAdd">
-    <input name="sku" placeholder="SKU" required>
-    <input name="nama" placeholder="Nama" required>
-    <input name="satuan" placeholder="Satuan" required>
-    <button>Tambah</button>
-</form>
+<main>
+    <header>
+        <h1><span>📦</span>Data Barang</h1>
+        <p>Kelola daftar barang dengan cepat dan nyaman. Tambah, perbarui, dan hapus item secara real-time.</p>
+    </header>
 
+    <form id="fAdd">
+        <input name="sku" placeholder="SKU" required>
+        <input name="nama" placeholder="Nama" required>
+        <input name="satuan" placeholder="Satuan" required>
+        <button type="submit">Tambah Barang</button>
+    </form>
 
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>SKU</th>
-        <th>Nama</th>
-        <th>Satuan</th>
-        <th>Aksi</th>
-    </tr>
-    </thead>
-    <tbody id="rows"></tbody>
-</table>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>SKU</th>
+            <th>Nama</th>
+            <th>Satuan</th>
+            <th>Aksi</th>
+        </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+    </table>
+</main>
 
+<div class="toast" id="toast" data-type="info"></div>
 
 <script>
     const API = '../api/barang.php';
     const rows = document.getElementById('rows');
-
+    const toast = document.getElementById('toast');
 
     async function list() {
-        const r = await fetch(API);
-        const data = await r.json();
-        rows.innerHTML = data.map(d => `
-<tr>
-<td>${d.id_barang}</td>
-<td><input value="${escapeHtml(d.sku)}" data-id="${d.id_barang}" data-k="sku"></td>
-<td><input value="${escapeHtml(d.nama)}" data-id="${d.id_barang}" data-k="nama"></td>
-<td><input value="${escapeHtml(d.satuan)}" data-id="${d.id_barang}" data-k="satuan"></td>
-<td>
-<button onclick="save(${d.id_barang})">Simpan</button>
-<button onclick="del(${d.id_barang})">Hapus</button>
-</td>
-</tr>`).join('');
+        try {
+            const r = await fetch(API);
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            const data = await r.json();
+            if (!Array.isArray(data)) throw new Error('Respon tidak valid');
+            rows.innerHTML = data.map((d, idx) => `
+                <tr style="--delay:${idx * 60}ms">
+                    <td>${d.id_barang}</td>
+                    <td><input value="${escapeHtml(d.sku)}" data-id="${d.id_barang}" data-k="sku"></td>
+                    <td><input value="${escapeHtml(d.nama)}" data-id="${d.id_barang}" data-k="nama"></td>
+                    <td><input value="${escapeHtml(d.satuan)}" data-id="${d.id_barang}" data-k="satuan"></td>
+                    <td>
+                        <button onclick="save(${d.id_barang})">Simpan</button>
+                        <button class="secondary" onclick="del(${d.id_barang})">Hapus</button>
+                    </td>
+                </tr>`).join('');
+            animateRows();
+            list.errorShown = false;
+        } catch (err) {
+            console.error(err);
+            rows.innerHTML = `
+                <tr class="empty-row">
+                    <td colspan="5">Tidak dapat memuat data saat ini.</td>
+                </tr>`;
+            if (!list.errorShown) {
+                showToast('Tidak dapat memuat data.', 'warning');
+                list.errorShown = true;
+            }
+        }
     }
 
+    function animateRows() {
+        requestAnimationFrame(() => {
+            rows.querySelectorAll('tr').forEach(tr => {
+                tr.classList.add('fade-in');
+            });
+        });
+    }
 
     function escapeHtml(s) {
-        return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+        return String(s)
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
     }
-
 
     fAdd.addEventListener('submit', async (e) => {
         e.preventDefault();
         const fd = new FormData(fAdd);
-        await fetch(API, {method: 'POST', body: fd});
-        fAdd.reset();
-        list();
+        try {
+            const r = await fetch(API, {method: 'POST', body: fd});
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            fAdd.reset();
+            showToast('Barang berhasil ditambahkan!', 'success');
+            list();
+        } catch (err) {
+            console.error(err);
+            showToast('Gagal menambahkan barang.', 'warning');
+        }
     });
-
 
     async function save(id) {
         const inputs = [...document.querySelectorAll(`input[data-id="${id}"]`)];
         const payload = Object.fromEntries(inputs.map(i => [i.dataset.k, i.value]));
-        await fetch(API + '?id=' + id, {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(payload)
-        });
+        try {
+            const r = await fetch(API + '?id=' + id, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            showToast('Perubahan tersimpan!', 'success');
+            list();
+        } catch (err) {
+            console.error(err);
+            showToast('Gagal menyimpan perubahan.', 'warning');
+        }
     }
+
+    async function del(id) {
+        if (!confirm('Hapus barang ini?')) return;
+        try {
+            const r = await fetch(API + '?id=' + id, {method: 'DELETE'});
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            showToast('Barang dihapus.', 'warning');
+            list();
+        } catch (err) {
+            console.error(err);
+            showToast('Gagal menghapus barang.', 'warning');
+        }
+    }
+
+    function showToast(message, type = 'info') {
+        toast.textContent = message;
+        toast.dataset.type = type;
+        toast.classList.add('show');
+        clearTimeout(showToast.timeout);
+        showToast.timeout = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    list();
 </script>
 </body>
 </html>
